@@ -9,6 +9,9 @@ public class IdentityDbContext(DbContextOptions<IdentityDbContext> options) : Db
 
     public DbSet<User> Users => Set<User>();
 
+    public bool FirstOrDefaultAsync { get; internal set; }
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
