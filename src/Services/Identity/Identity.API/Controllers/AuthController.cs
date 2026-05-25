@@ -1,4 +1,5 @@
 using Identity.Application.Commands.LoginUser;
+using Identity.Application.Commands.RefreshUserToken;
 using Identity.Application.Commands.RegisterUser;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,12 @@ public class AuthController : ControllerBase
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginUserCommand command, CancellationToken cancellationToken)
+    {
+        var response = await _mediator.Send(command, cancellationToken);
+        return Ok(response);
+    }
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh([FromBody] RefreshUserTokenCommand command, CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(command, cancellationToken);
         return Ok(response);
