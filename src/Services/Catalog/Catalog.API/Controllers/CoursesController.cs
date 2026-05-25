@@ -1,3 +1,4 @@
+using Catalog.Application.Commands.CreateCourse;
 using Catalog.Application.DTOs;
 using Catalog.Application.Queries.GetAllCourses;
 using Catalog.Application.Queries.GetCourseById;
@@ -22,6 +23,13 @@ public class CoursesController : ControllerBase
     {
         IReadOnlyList<CourseDto> response = await _mediator.Send(new GetAllCoursesQuery(), cancellationToken);
         return Ok(response);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateCourseCommand command, CancellationToken cancellationToken)
+    {
+        CourseDto response = await _mediator.Send(command, cancellationToken);
+        return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
     }
 
     [HttpGet("{id:guid}")]
