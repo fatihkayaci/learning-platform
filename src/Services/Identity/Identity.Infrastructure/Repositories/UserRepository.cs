@@ -14,6 +14,9 @@ public class UserRepository : IUserRepository
     public async Task AddAsync(User user, CancellationToken cancellationToken) => 
         await _context.Users.AddAsync(user, cancellationToken);
 
+    public async Task AddRefreshTokenAsync(RefreshToken token, CancellationToken cancellationToken)=>
+        await _context.RefreshTokens.AddAsync(token, cancellationToken);
+
     public async Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken) => 
         await _context.Users.AnyAsync(u => u.Email == email, cancellationToken);
 

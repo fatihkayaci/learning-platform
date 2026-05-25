@@ -1,3 +1,4 @@
+using FluentValidation;
 using Identity.Application.Commands.RegisterUser;
 using Identity.Application.Common.Interfaces;
 using Identity.Infrastructure.Persistence;
@@ -15,8 +16,10 @@ builder.Services.AddDbContext<IdentityDbContext>(options =>
 
 builder.Services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITokenService, JwtTokenService>();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(RegisterUserCommandHandler).Assembly));
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserCommandHandler>();
 builder.Services.AddControllers();
 
 var app = builder.Build();

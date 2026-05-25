@@ -8,6 +8,7 @@ public class IdentityDbContext(DbContextOptions<IdentityDbContext> options) : Db
 {
 
     public DbSet<User> Users => Set<User>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     public bool FirstOrDefaultAsync { get; internal set; }
 

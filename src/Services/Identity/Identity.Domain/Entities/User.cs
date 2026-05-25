@@ -8,8 +8,11 @@ public class User : BaseEntity
     public string PasswordHash { get; private set; } = null!;
     public string FullName { get; private set; } = null!;
     public UserRole Role { get; private set; }
-
-    private User() { }
+    public ICollection<RefreshToken> RefreshTokens { get; private set; }
+    private User()
+    {
+        RefreshTokens = new List<RefreshToken>();
+    }
 
     public static User Create(string email, string passwordHash, string fullName, UserRole role)
     {
@@ -30,5 +33,9 @@ public class User : BaseEntity
             FullName = fullName,
             Role = role
         };
+    }
+    public void AddRefreshToken(RefreshToken token)
+    {
+        RefreshTokens.Add(token);
     }
 }
