@@ -11,7 +11,9 @@ public class CourseRepository : ICourseRepository
         _context = context;
 
     public async Task<Course?> GetByIdAsync(Guid id, CancellationToken cancellationToken)=>
-        await _context.Courses.SingleOrDefaultAsync(c => c.Id == id, cancellationToken);
+        await _context.Courses
+        .Include(c => c.Lessons)
+        .SingleOrDefaultAsync(c => c.Id == id, cancellationToken);
 
     public async Task AddAsync(Course course, CancellationToken cancellationToken) => 
         await _context.Courses.AddAsync(course, cancellationToken);
