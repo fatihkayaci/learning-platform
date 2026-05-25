@@ -18,7 +18,24 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-      
+  
+  catalog.db:
+    image: postgres:16-alpine
+    container_name: catalog_postgres_db
+    environment:
+      - POSTGRES_USER=${CATALOG_DB_USER}
+      - POSTGRES_PASSWORD=${CATALOG_DB_PASSWORD}
+      - POSTGRES_DB=${CATALOG_DB_NAME}
+    ports:
+      - "5433:5432"
+    volumes:
+      - catalog_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${CATALOG_DB_USER} -d ${CATALOG_DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  
   pgadmin:
     image: dpage/pgadmin4
     container_name: identity_pgadmin
@@ -29,6 +46,8 @@ services:
       - "5050:80"
     depends_on:
       - identity.db
+      - catalog.db
 
 volumes:
   identity_pg_data:
+  catalog_pg_data:
