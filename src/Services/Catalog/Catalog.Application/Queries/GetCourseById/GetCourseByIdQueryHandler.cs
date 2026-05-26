@@ -1,11 +1,12 @@
 using Catalog.Application.Common.Interfaces;
 using Catalog.Application.DTOs;
 using Catalog.Domain.Entities;
+using Catalog.Domain.Exceptions;
 using MediatR;
 
 namespace Catalog.Application.Queries.GetCourseById;
 
-public class GetCourseByIdQueryHandler : IRequestHandler<GetCourseByIdQuery, CourseDetailDto?>
+public class GetCourseByIdQueryHandler : IRequestHandler<GetCourseByIdQuery, CourseDetailDto>
 {
     private readonly ICourseRepository _courseRepository;
 
@@ -14,12 +15,12 @@ public class GetCourseByIdQueryHandler : IRequestHandler<GetCourseByIdQuery, Cou
         _courseRepository = courseRepository;
     }
 
-    public async Task<CourseDetailDto?> Handle(GetCourseByIdQuery request, CancellationToken cancellationToken)
+    public async Task<CourseDetailDto> Handle(GetCourseByIdQuery request, CancellationToken cancellationToken)
     {
         Course? course = await _courseRepository.GetByIdAsync(request.Id, cancellationToken);
 
-        if (course is null)
-            return null;
+        if (course == null)
+            throw new NotFoundException($"Course with id '{request.Id}' not found.");
 
         return new CourseDetailDto(
             course.Id,

@@ -1,3 +1,5 @@
+using Catalog.Domain.Exceptions;
+
 namespace Catalog.Domain.Entities;
 
 public class Category : BaseEntity
@@ -10,6 +12,9 @@ public class Category : BaseEntity
     
     public static Category Create(string name)
     {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new BusinessException("Category name cannot be empty");
+            
         return new Category { Name = name };
     }
 
