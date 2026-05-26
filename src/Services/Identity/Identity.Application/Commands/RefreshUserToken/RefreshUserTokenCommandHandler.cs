@@ -1,6 +1,7 @@
 using Identity.Application.Common.Interfaces;
 using Identity.Application.DTOs;
 using Identity.Domain.Entities;
+using Identity.Domain.Exceptions;
 using MediatR;
 namespace Identity.Application.Commands.RefreshUserToken;
 
@@ -18,14 +19,14 @@ public class RefreshUserTokenCommandHandler : IRequestHandler<RefreshUserTokenCo
     {
         RefreshToken? token = await _userRepository.GetRefreshTokenAsync(request.RefreshToken, cancellationToken);
         if (token == null)
-            throw new Exception("Refresh token bulunamadı");
+            throw new NotFoundException("Refresh token not found");
 
         if (!token.IsActive)
-            throw new Exception("Token geçersiz veya süresi dolmuş");
+            throw new BusinessException("Token is invalid or expired");
 
         User? user = await _userRepository.GetByIdAsync(token.UserId, cancellationToken);
         if (user == null)
-            throw new Exception("Kullanıcı bulunamadı");
+            throw new NotFoundException("User not found");
 
         string accessToken = _tokenService.GenerateAccessToken(user);
         

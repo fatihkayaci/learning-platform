@@ -1,4 +1,5 @@
 using Identity.Domain.Enums;
+using Identity.Domain.Exceptions;
 
 namespace Identity.Domain.Entities;
 
@@ -16,15 +17,14 @@ public class User : BaseEntity
 
     public static User Create(string email, string passwordHash, string fullName, UserRole role)
     {
-        // Validation
         if (string.IsNullOrWhiteSpace(email))
-            throw new ArgumentException("Email boş olamaz", nameof(email));
+            throw new BusinessException("Email cannot be empty");
         if (string.IsNullOrWhiteSpace(passwordHash))
-            throw new ArgumentException("Password hash boş olamaz", nameof(passwordHash));
+            throw new BusinessException("Password hash cannot be empty");
         if (string.IsNullOrWhiteSpace(fullName))
-            throw new ArgumentException("İsim boş olamaz", nameof(fullName));
+            throw new BusinessException("Full name cannot be empty");
         if (!Enum.IsDefined(typeof(UserRole), role))
-            throw new ArgumentException("Geçersiz rol", nameof(role));
+            throw new BusinessException("Invalid role");
 
         return new User
         {

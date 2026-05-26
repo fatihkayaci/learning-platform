@@ -1,6 +1,7 @@
 using Identity.Application.Common.Interfaces;
 using Identity.Application.DTOs;
 using Identity.Domain.Entities;
+using Identity.Domain.Exceptions;
 using MediatR;
 
 namespace Identity.Application.Commands.RegisterUser;
@@ -19,11 +20,11 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, U
     public async Task<UserDto> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
         if (await _userRepository.ExistsByEmailAsync(request.Email, cancellationToken))
-            throw new Exception("Bu email zaten kayıtlı");
+            throw new BusinessException("Email is already registered");
 
-        var passwordHash = _passwordHasher.Hash(request.Password);
+        string passwordHash = _passwordHasher.Hash(request.Password);
 
-        var user = User.Create(request.Email, passwordHash, request.FullName, request.Role);
+        User user = User.Create(request.Email, passwordHash, request.FullName, request.Role);
 
         await _userRepository.AddAsync(user, cancellationToken);
         await _userRepository.SaveChangesAsync(cancellationToken);
