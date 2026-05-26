@@ -21,7 +21,15 @@ public class CourseRepository : ICourseRepository
     public async Task<IReadOnlyList<Course>> GetAllAsync(CancellationToken cancellationToken) =>
         await _context.Courses.ToListAsync(cancellationToken);
         
+
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken) =>
+        await _context.Courses.Where(c => c.Id == id).ExecuteDeleteAsync(cancellationToken);
+
+    public Task UpdateAsync(Course course, CancellationToken cancellationToken)
+    {
+        _context.Courses.Update(course);
+        return Task.CompletedTask;
+    }
     public async Task SaveChangesAsync(CancellationToken cancellationToken) => 
         await _context.SaveChangesAsync(cancellationToken);
-
 }
