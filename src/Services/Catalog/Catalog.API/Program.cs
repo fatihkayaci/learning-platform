@@ -1,3 +1,4 @@
+using Catalog.API.Middleware;
 using Catalog.Application.Common.Interfaces;
 using Catalog.Application.Queries.GetAllCourses;
 using Catalog.Infrastructure.Persistence;
@@ -19,6 +20,7 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 
 if (app.Environment.IsDevelopment())
