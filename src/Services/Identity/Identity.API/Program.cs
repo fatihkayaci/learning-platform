@@ -1,4 +1,5 @@
 using FluentValidation;
+using Identity.API.Middleware;
 using Identity.Application.Commands.RegisterUser;
 using Identity.Application.Common.Interfaces;
 using Identity.Infrastructure.Persistence;
@@ -30,6 +31,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ExceptionMiddleware>();
 app.MapControllers();
 
 app.Run();
