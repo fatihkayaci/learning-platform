@@ -1,6 +1,7 @@
 using Identity.Application.Common.Interfaces;
 using Identity.Application.DTOs;
 using Identity.Domain.Entities;
+using Identity.Domain.Exceptions;
 using MediatR;
 
 namespace Identity.Application.Commands.LoginUser;
@@ -22,7 +23,7 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, LoginRe
     {
         User? user = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
         if (user == null || !_passwordHasher.Verify(request.Password, user.PasswordHash))
-            throw new Exception("Email veya şifre hatalı");
+            throw new BusinessException("Email or Password incorrect");
 
         string accessToken = _tokenService.GenerateAccessToken(user);
         string refreshTokenString = _tokenService.GenerateRefreshToken();

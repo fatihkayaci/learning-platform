@@ -1,3 +1,5 @@
+using Identity.Domain.Exceptions;
+
 namespace Identity.Domain.Entities;
 
 public class RefreshToken : BaseEntity
@@ -18,6 +20,13 @@ public class RefreshToken : BaseEntity
 
     public static RefreshToken Create(Guid userId, string token, int expirationDays)
     {
+       if (userId == Guid.Empty)
+            throw new BusinessException("Id cannot be empty");
+       if (string.IsNullOrWhiteSpace(token))
+            throw new BusinessException("Token cannot be empty");
+       if (expirationDays <= 0)
+            throw new BusinessException("Expiration days must be greater than zero");
+
         return new RefreshToken
         {
             UserId = userId,
