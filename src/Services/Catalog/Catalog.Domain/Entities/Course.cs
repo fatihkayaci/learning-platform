@@ -20,4 +20,11 @@ public class Course : BaseEntity
             Description = description ?? string.Empty
         };
     }
+
+    public void Update(string name, string? description, Guid categoryId)
+    {
+        Name = name ?? Name;
+        CategoryId = categoryId;
+        Description = description ?? Description;
+    }
 }
