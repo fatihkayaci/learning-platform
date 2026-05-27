@@ -5,12 +5,14 @@ using Catalog.Application.DTOs;
 using Catalog.Application.Queries.GetAllCourses;
 using Catalog.Application.Queries.GetCourseById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.API.Controllers;
 
 [Route("api/courses")]
 [ApiController]
+[Authorize]
 public class CoursesController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -21,6 +23,7 @@ public class CoursesController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         IReadOnlyList<CourseDto> response = await _mediator.Send(new GetAllCoursesQuery(), cancellationToken);
@@ -28,6 +31,7 @@ public class CoursesController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         CourseDetailDto? response = await _mediator.Send(new GetCourseByIdQuery(id), cancellationToken);
@@ -39,6 +43,7 @@ public class CoursesController : ControllerBase
     }
     
     [HttpPost]
+    [Authorize(Roles = "Instructor")]
     public async Task<IActionResult> Create([FromBody] CreateCourseCommand command, CancellationToken cancellationToken)
     {
         CourseDto response = await _mediator.Send(command, cancellationToken);
@@ -46,6 +51,7 @@ public class CoursesController : ControllerBase
     }
 
     [HttpPut]
+    [Authorize(Roles = "Instructor")]
     public async Task<IActionResult> Update([FromBody] UpdateCourseCommand command, CancellationToken cancellationToken)
     {
         CourseDto response = await _mediator.Send(command, cancellationToken);
@@ -53,6 +59,7 @@ public class CoursesController : ControllerBase
     }
 
     [HttpDelete]
+    [Authorize(Roles = "Instructor")]
     public async Task<IActionResult> Delete([FromBody] DeleteCourseCommand command, CancellationToken cancellationToken)
     {
         await _mediator.Send(command, cancellationToken);

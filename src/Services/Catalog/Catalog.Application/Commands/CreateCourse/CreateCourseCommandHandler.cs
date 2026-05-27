@@ -8,15 +8,17 @@ namespace Catalog.Application.Commands.CreateCourse;
 public class CreateCourseCommandHandler : IRequestHandler<CreateCourseCommand, CourseDto>
 {
     private readonly ICourseRepository _courseRepository;
+    private readonly ICurrentUserService _currentUserService;
 
-    public CreateCourseCommandHandler(ICourseRepository courseRepository)
+    public CreateCourseCommandHandler(ICourseRepository courseRepository, ICurrentUserService currentUserService)
     {
         _courseRepository = courseRepository;
+        _currentUserService = currentUserService;
     }
 
     public async Task<CourseDto> Handle(CreateCourseCommand request, CancellationToken cancellationToken)
     {
-        Course course = Course.Create(request.Name, request.InstructorId, request.CategoryId, request.Description);
+        Course course = Course.Create(request.Name, _currentUserService.UserId, request.CategoryId, request.Description);
         await _courseRepository.AddAsync(course, cancellationToken);
         await _courseRepository.SaveChangesAsync(cancellationToken);
         return new CourseDto(course.Id, course.Name, course.Description, course.InstructorId, course.CategoryId);

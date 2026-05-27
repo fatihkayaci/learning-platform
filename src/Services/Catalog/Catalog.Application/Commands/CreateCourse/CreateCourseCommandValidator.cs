@@ -7,7 +7,6 @@ public class CreateCourseCommandValidator : AbstractValidator<CreateCourseComman
     public CreateCourseCommandValidator()
     {
         RuleFor(x => x.Name).NotEmpty().MaximumLength(200);
-        RuleFor(x => x.InstructorId).NotEmpty();
         RuleFor(x => x.CategoryId).NotEmpty();
         RuleFor(x => x.Description).MaximumLength(2000).When(x => x.Description is not null);
     }
