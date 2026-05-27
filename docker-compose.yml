@@ -38,7 +38,7 @@ services:
   
   pgadmin:
     image: dpage/pgadmin4
-    container_name: identity_pgadmin
+    container_name: learning_platform_pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PG_ADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PG_ADMIN_PASSWORD}
