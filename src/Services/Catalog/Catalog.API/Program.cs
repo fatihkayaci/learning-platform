@@ -1,5 +1,6 @@
 using System.Text;
 using Catalog.API.Middleware;
+using Catalog.Infrastructure.Messaging;
 using Catalog.Infrastructure.Services;
 using Catalog.Application.Common.Interfaces;
 using Catalog.Application.Queries.GetAllCourses;
@@ -64,6 +65,8 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ILessonRepository, LessonRepository>();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetAllCoursesQuery).Assembly));
+
+builder.Services.AddHostedService<UserRegisteredConsumer>();
 
 builder.Services.AddControllers();
 

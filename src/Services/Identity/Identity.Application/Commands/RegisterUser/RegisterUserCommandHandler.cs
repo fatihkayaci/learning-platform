@@ -1,3 +1,4 @@
+using BuildingBlocks.Messaging.Events.Identity;
 using Identity.Application.Common.Interfaces;
 using Identity.Application.DTOs;
 using Identity.Domain.Entities;
@@ -10,11 +11,13 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, U
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
+    private readonly IEventPublisher _eventPublisher;
 
-    public RegisterUserCommandHandler(IUserRepository userRepository, IPasswordHasher passwordHasher)
+    public RegisterUserCommandHandler(IUserRepository userRepository, IPasswordHasher passwordHasher, IEventPublisher eventPublisher)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
+        _eventPublisher = eventPublisher;
     }
 
     public async Task<UserDto> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
@@ -28,6 +31,9 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, U
 
         await _userRepository.AddAsync(user, cancellationToken);
         await _userRepository.SaveChangesAsync(cancellationToken);
+
+        UserRegisteredEvent @event = new(user.Id, user.Email, user.Role.ToString(), DateTime.UtcNow);
+        await _eventPublisher.PublishAsync(@event, cancellationToken);
 
         return new UserDto(user.Id, user.Email, user.FullName, user.Role);
     }
