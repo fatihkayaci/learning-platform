@@ -84,24 +84,3 @@ if (app.Environment.IsDevelopment())
 
 app.MapControllers();
 app.Run();
-
-public class BearerSecurityOperationFilter : IOperationFilter
-{
-    public void Apply(OpenApiOperation operation, OperationFilterContext context)
-    {
-        bool hasAuthorize = context.MethodInfo.DeclaringType!
-            .GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any()
-            || context.MethodInfo.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any();
-
-        if (!hasAuthorize)
-            return;
-
-        operation.Security =
-        [
-            new OpenApiSecurityRequirement
-            {
-                { new OpenApiSecuritySchemeReference("Bearer"), new List<string>() }
-            }
-        ];
-    }
-}
