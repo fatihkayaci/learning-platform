@@ -10,6 +10,12 @@
     <Project Path="src/Services/Catalog/Catalog.Infrastructure/Catalog.Infrastructure.csproj" />
     <Project Path="src/Services/Catalog/Catalog.Domain/Catalog.Domain.csproj" />
   </Folder>
+  <Folder Name="/src/Services/Enrollment/">
+    <Project Path="src/Services/Enrollment/Enrollment.API/Enrollment.API.csproj" />
+    <Project Path="src/Services/Enrollment/Enrollment.Application/Enrollment.Application.csproj" />
+    <Project Path="src/Services/Enrollment/Enrollment.Infrastructure/Enrollment.Infrastructure.csproj" />
+    <Project Path="src/Services/Enrollment/Enrollment.Domain/Enrollment.Domain.csproj" />
+  </Folder>
   <Folder Name="/src/Services/Identity/">
     <Project Path="src/Services/Identity/Identity.API/Identity.API.csproj" />
     <Project Path="src/Services/Identity/Identity.Application/Identity.Application.csproj" />
