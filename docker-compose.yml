@@ -36,6 +36,23 @@ services:
       timeout: 5s
       retries: 10
 
+  enrollment-db:
+    image: postgres:16-alpine
+    container_name: lp_enrollment_db
+    environment:
+      - POSTGRES_USER=${ENROLLMENT_DB_USER}
+      - POSTGRES_PASSWORD=${ENROLLMENT_DB_PASSWORD}
+      - POSTGRES_DB=${ENROLLMENT_DB_NAME}
+    ports:
+      - "5434:5432"
+    volumes:
+      - lp_enrollment_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${ENROLLMENT_DB_USER} -d ${ENROLLMENT_DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   rabbitmq:
     image: rabbitmq:3-management
     container_name: lp_rabbitmq
@@ -65,8 +82,10 @@ services:
     depends_on:
       - identity-db
       - catalog-db
+      - enrollment-db
 
 volumes:
   lp_identity_db_data:
   lp_catalog_db_data:
+  lp_enrollment_db_data:
   lp_rabbitmq_data:
