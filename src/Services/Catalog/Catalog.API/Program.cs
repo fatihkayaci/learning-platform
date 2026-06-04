@@ -1,4 +1,5 @@
 using System.Text;
+using Catalog.Infrastructure.Persistence.Seeders;
 using Catalog.API.Middleware;
 using Catalog.Infrastructure.Messaging;
 using Catalog.Infrastructure.Services;
@@ -76,6 +77,7 @@ using (IServiceScope scope = app.Services.CreateScope())
 {
     CatalogDbContext db = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
     await db.Database.MigrateAsync();
+    await CatalogSeeder.SeedAsync(db);
 }
 
 app.UseMiddleware<ExceptionMiddleware>();
