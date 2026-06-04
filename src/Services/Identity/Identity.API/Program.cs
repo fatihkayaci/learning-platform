@@ -40,6 +40,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    IdentityDbContext db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+    await db.Database.MigrateAsync();
+}
+
 app.UseMiddleware<ExceptionMiddleware>();
 app.MapControllers();
 
