@@ -1,4 +1,5 @@
 using FluentValidation;
+using Identity.Infrastructure.Persistence.Seeders;
 using Identity.API.Middleware;
 using Identity.Application.Commands.RegisterUser;
 using Identity.Application.Common.Interfaces;
@@ -44,6 +45,7 @@ using (IServiceScope scope = app.Services.CreateScope())
 {
     IdentityDbContext db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
     await db.Database.MigrateAsync();
+    await IdentitySeeder.SeedAsync(db);
 }
 
 app.UseMiddleware<ExceptionMiddleware>();
