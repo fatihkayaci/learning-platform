@@ -1,4 +1,6 @@
 using Enrollment.Application.Commands.EnrollInCourse;
+using Enrollment.Application.DTOs;
+using Enrollment.Application.Queries.GetEnrolledCourses;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +17,13 @@ public class EnrollmentsController : ControllerBase
     public EnrollmentsController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetEnrolledCourses(CancellationToken cancellationToken)
+    {
+        List<EnrolledCourseDto> result = await _mediator.Send(new GetEnrolledCoursesQuery(), cancellationToken);
+        return Ok(result);
     }
 
     [HttpPost]
