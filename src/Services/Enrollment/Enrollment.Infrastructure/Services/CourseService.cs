@@ -13,7 +13,7 @@ public class CourseService : ICourseService
 
     public async Task<bool> ExistsAsync(Guid courseId, CancellationToken cancellationToken = default)
     {
-        HttpResponseMessage response = await _httpClient.GetAsync($"courses/{courseId}", cancellationToken);
+        HttpResponseMessage response = await _httpClient.GetAsync($"api/courses/{courseId}", cancellationToken);
         return response.IsSuccessStatusCode;
     }
 }
