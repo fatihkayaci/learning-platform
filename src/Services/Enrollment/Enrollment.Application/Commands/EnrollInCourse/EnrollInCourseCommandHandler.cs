@@ -1,3 +1,5 @@
+using BuildingBlocks.Messaging.Abstractions;
+using BuildingBlocks.Messaging.Events.Enrollment;
 using Enrollment.Application.Common.Interfaces;
 using Enrollment.Domain.Exceptions;
 using MediatR;
@@ -9,15 +11,18 @@ public class EnrollInCourseCommandHandler : IRequestHandler<EnrollInCourseComman
     private readonly IEnrollmentRepository _enrollmentRepository;
     private readonly ICourseService _courseService;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IEventPublisher _eventPublisher;
 
     public EnrollInCourseCommandHandler(
         IEnrollmentRepository enrollmentRepository,
         ICourseService courseService,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IEventPublisher eventPublisher)
     {
         _enrollmentRepository = enrollmentRepository;
         _courseService = courseService;
         _currentUserService = currentUserService;
+        _eventPublisher = eventPublisher;
     }
 
     public async Task<Guid> Handle(EnrollInCourseCommand request, CancellationToken cancellationToken)
@@ -38,6 +43,10 @@ public class EnrollInCourseCommandHandler : IRequestHandler<EnrollInCourseComman
 
         await _enrollmentRepository.AddAsync(enrollment, cancellationToken);
         await _enrollmentRepository.SaveChangesAsync(cancellationToken);
+
+        await _eventPublisher.PublishAsync(
+            new StudentEnrolledEvent(enrollment.Id, studentId, request.CourseId, DateTime.UtcNow),
+            cancellationToken);
 
         return enrollment.Id;
     }
