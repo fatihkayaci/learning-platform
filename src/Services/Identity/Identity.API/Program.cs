@@ -1,7 +1,6 @@
-using FluentValidation;
+using Identity.Application.Extensions;
 using Identity.Infrastructure.Persistence.Seeders;
 using Identity.API.Middleware;
-using Identity.Application.Commands.RegisterUser;
 using BuildingBlocks.Messaging.Abstractions;
 using BuildingBlocks.Messaging.RabbitMQ;
 using Identity.Application.Common.Interfaces;
@@ -30,8 +29,7 @@ builder.Services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITokenService, JwtTokenService>();
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(RegisterUserCommandHandler).Assembly));
-builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserCommandHandler>();
+builder.Services.AddApplicationServices();
 builder.Services.AddControllers();
 
 var app = builder.Build();

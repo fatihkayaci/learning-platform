@@ -6,15 +6,13 @@ using BuildingBlocks.Messaging.RabbitMQ;
 using Catalog.Infrastructure.Messaging;
 using Catalog.Infrastructure.Services;
 using Catalog.Application.Common.Interfaces;
-using Catalog.Application.Queries.GetAllCourses;
+using Catalog.Application.Extensions;
 using Catalog.Infrastructure.Persistence;
 using Catalog.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,7 +65,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ILessonRepository, LessonRepository>();
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetAllCoursesQuery).Assembly));
+builder.Services.AddApplicationServices();
 
 builder.Services.AddHostedService<UserRegisteredConsumer>();
 builder.Services.AddHostedService<StudentEnrolledConsumer>();
