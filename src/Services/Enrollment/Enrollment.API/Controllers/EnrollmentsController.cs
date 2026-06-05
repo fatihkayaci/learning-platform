@@ -1,3 +1,4 @@
+using Enrollment.Application.Commands.CompleteLesson;
 using Enrollment.Application.Commands.EnrollInCourse;
 using Enrollment.Application.DTOs;
 using Enrollment.Application.Queries.GetEnrolledCourses;
@@ -31,5 +32,12 @@ public class EnrollmentsController : ControllerBase
     {
         Guid enrollmentId = await _mediator.Send(command, cancellationToken);
         return CreatedAtAction(nameof(EnrollInCourse), new { id = enrollmentId }, new { id = enrollmentId });
+    }
+
+    [HttpPost("lessons/{lessonId}/complete")]
+    public async Task<IActionResult> CompleteLesson([FromRoute] Guid lessonId, [FromBody] CompleteLessonRequest request, CancellationToken cancellationToken)
+    {
+        Guid lessonProgressId = await _mediator.Send(new CompleteLessonCommand(request.CourseId, lessonId), cancellationToken);
+        return CreatedAtAction(nameof(CompleteLesson), new { id = lessonProgressId }, new { id = lessonProgressId });
     }
 }
