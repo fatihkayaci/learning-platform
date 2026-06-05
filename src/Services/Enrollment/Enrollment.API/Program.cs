@@ -1,4 +1,6 @@
 using System.Text;
+using BuildingBlocks.Messaging.Abstractions;
+using BuildingBlocks.Messaging.RabbitMQ;
 using Enrollment.API.Middleware;
 using Enrollment.Application.Commands.EnrollInCourse;
 using Enrollment.Application.Common.Interfaces;
@@ -73,6 +75,14 @@ builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(EnrollInCourseCommand).Assembly));
 
 builder.Services.AddHostedService<LessonAddedConsumer>();
+
+builder.Services.AddSingleton<IEventPublisher>(_ =>
+    RabbitMqEventPublisher.CreateAsync(
+        builder.Configuration["RabbitMQ:Host"]!,
+        builder.Configuration["RabbitMQ:Username"]!,
+        builder.Configuration["RabbitMQ:Password"]!
+    ).GetAwaiter().GetResult()
+);
 
 builder.Services.AddControllers();
 

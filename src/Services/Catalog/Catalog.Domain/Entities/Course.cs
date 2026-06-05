@@ -9,6 +9,7 @@ public class Course : BaseEntity
     public string Description { get; private set; } = string.Empty;
     public Guid CategoryId { get; private set; }
     public List<Lesson> Lessons { get; private set; } = [];
+    public int EnrollmentCount { get; private set; }
 
     public Course(){}
 
@@ -29,6 +30,8 @@ public class Course : BaseEntity
             Description = description ?? string.Empty
         };
     }
+
+    public void IncrementEnrollmentCount() => EnrollmentCount++;
 
     public void Update(string name, string? description, Guid categoryId)
     {

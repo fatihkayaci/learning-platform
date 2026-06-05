@@ -70,6 +70,7 @@ builder.Services.AddScoped<ILessonRepository, LessonRepository>();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetAllCoursesQuery).Assembly));
 
 builder.Services.AddHostedService<UserRegisteredConsumer>();
+builder.Services.AddHostedService<StudentEnrolledConsumer>();
 
 builder.Services.AddSingleton<IEventPublisher>(_ =>
     RabbitMqEventPublisher.CreateAsync(
