@@ -6,5 +6,6 @@ public interface ILessonProgressRepository
 {
     Task AddAsync(LessonProgress lessonProgress, CancellationToken cancellationToken = default);
     Task<bool> ExistsAsync(Guid enrollmentId, Guid lessonId, CancellationToken cancellationToken = default);
+    Task<int> CountByEnrollmentIdAsync(Guid enrollmentId, CancellationToken cancellationToken = default);
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }

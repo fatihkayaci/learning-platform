@@ -1,6 +1,8 @@
 using System.Text;
 using Catalog.Infrastructure.Persistence.Seeders;
 using Catalog.API.Middleware;
+using BuildingBlocks.Messaging.Abstractions;
+using BuildingBlocks.Messaging.RabbitMQ;
 using Catalog.Infrastructure.Messaging;
 using Catalog.Infrastructure.Services;
 using Catalog.Application.Common.Interfaces;
@@ -68,6 +70,14 @@ builder.Services.AddScoped<ILessonRepository, LessonRepository>();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetAllCoursesQuery).Assembly));
 
 builder.Services.AddHostedService<UserRegisteredConsumer>();
+
+builder.Services.AddSingleton<IEventPublisher>(_ =>
+    RabbitMqEventPublisher.CreateAsync(
+        builder.Configuration["RabbitMQ:Host"]!,
+        builder.Configuration["RabbitMQ:Username"]!,
+        builder.Configuration["RabbitMQ:Password"]!
+    ).GetAwaiter().GetResult()
+);
 
 builder.Services.AddControllers();
 

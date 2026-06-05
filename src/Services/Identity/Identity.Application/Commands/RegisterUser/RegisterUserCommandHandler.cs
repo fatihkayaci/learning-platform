@@ -1,3 +1,4 @@
+using BuildingBlocks.Messaging.Abstractions;
 using BuildingBlocks.Messaging.Events.Identity;
 using Identity.Application.Common.Interfaces;
 using Identity.Application.DTOs;

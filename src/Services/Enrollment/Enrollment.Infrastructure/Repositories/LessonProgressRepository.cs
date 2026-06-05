@@ -19,6 +19,10 @@ public class LessonProgressRepository : ILessonProgressRepository
         await _context.LessonProgresses
             .AnyAsync(lp => lp.EnrollmentId == enrollmentId && lp.LessonId == lessonId, cancellationToken);
 
+    public async Task<int> CountByEnrollmentIdAsync(Guid enrollmentId, CancellationToken cancellationToken = default) =>
+        await _context.LessonProgresses
+            .CountAsync(lp => lp.EnrollmentId == enrollmentId, cancellationToken);
+
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default) =>
         await _context.SaveChangesAsync(cancellationToken);
 }
