@@ -61,6 +61,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+builder.Services.AddScoped<ILessonProgressRepository, LessonProgressRepository>();
 
 builder.Services.AddHttpClient<ICourseService, CourseService>(client =>
 {
