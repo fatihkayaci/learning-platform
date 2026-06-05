@@ -1,9 +1,9 @@
 using System.Text;
 using System.Text.Json;
-using Identity.Application.Common.Interfaces;
+using BuildingBlocks.Messaging.Abstractions;
 using RabbitMQ.Client;
 
-namespace Identity.Infrastructure.Messaging;
+namespace BuildingBlocks.Messaging.RabbitMQ;
 
 public class RabbitMqEventPublisher : IEventPublisher, IAsyncDisposable
 {

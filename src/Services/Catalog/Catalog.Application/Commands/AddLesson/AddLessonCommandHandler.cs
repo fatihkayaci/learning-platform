@@ -1,9 +1,10 @@
+using BuildingBlocks.Messaging.Abstractions;
+using BuildingBlocks.Messaging.Events.Catalog;
 using Catalog.Application.Common.Interfaces;
 using Catalog.Application.DTOs;
 using Catalog.Domain.Entities;
 using Catalog.Domain.Exceptions;
 using MediatR;
-
 
 namespace Catalog.Application.Commands.AddLesson;
 
@@ -12,12 +13,18 @@ public class AddLessonCommandHandler : IRequestHandler<AddLessonCommand, LessonD
     private readonly ILessonRepository _lessonRepository;
     private readonly ICourseRepository _courseRepository;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IEventPublisher _eventPublisher;
 
-    public AddLessonCommandHandler(ILessonRepository lessonRepository, ICourseRepository courseRepository, ICurrentUserService currentUserService)
+    public AddLessonCommandHandler(
+        ILessonRepository lessonRepository,
+        ICourseRepository courseRepository,
+        ICurrentUserService currentUserService,
+        IEventPublisher eventPublisher)
     {
         _lessonRepository = lessonRepository;
         _courseRepository = courseRepository;
         _currentUserService = currentUserService;
+        _eventPublisher = eventPublisher;
     }
 
     public async Task<LessonDto> Handle(AddLessonCommand request, CancellationToken cancellationToken)
@@ -31,6 +38,9 @@ public class AddLessonCommandHandler : IRequestHandler<AddLessonCommand, LessonD
         Lesson lesson = Lesson.Create(request.Title, request.VideoUrl, request.Order, request.CourseId);
         await _lessonRepository.AddAsync(lesson, cancellationToken);
         await _lessonRepository.SaveChangesAsync(cancellationToken);
+
+        await _eventPublisher.PublishAsync(new LessonAddedEvent(lesson.Id, lesson.CourseId, DateTime.UtcNow), cancellationToken);
+
         return new LessonDto(lesson.Id, lesson.Title, lesson.VideoUrl, lesson.Order);
     }
 }

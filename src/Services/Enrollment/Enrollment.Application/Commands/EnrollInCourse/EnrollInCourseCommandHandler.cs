@@ -32,7 +32,9 @@ public class EnrollInCourseCommandHandler : IRequestHandler<EnrollInCourseComman
         if (alreadyEnrolled)
             throw new BusinessException("You are already enrolled in this course.");
 
-        Domain.Entities.Enrollment enrollment = Domain.Entities.Enrollment.Create(studentId, request.CourseId);
+        int totalLessonCount = await _courseService.GetLessonCountAsync(request.CourseId, cancellationToken);
+
+        Domain.Entities.Enrollment enrollment = Domain.Entities.Enrollment.Create(studentId, request.CourseId, totalLessonCount);
 
         await _enrollmentRepository.AddAsync(enrollment, cancellationToken);
         await _enrollmentRepository.SaveChangesAsync(cancellationToken);

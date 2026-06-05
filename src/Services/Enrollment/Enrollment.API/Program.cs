@@ -2,6 +2,7 @@ using System.Text;
 using Enrollment.API.Middleware;
 using Enrollment.Application.Commands.EnrollInCourse;
 using Enrollment.Application.Common.Interfaces;
+using Enrollment.Infrastructure.Messaging;
 using Enrollment.Infrastructure.Persistence;
 using Enrollment.Infrastructure.Repositories;
 using Enrollment.Infrastructure.Services;
@@ -70,6 +71,8 @@ builder.Services.AddHttpClient<ICourseService, CourseService>(client =>
 
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(EnrollInCourseCommand).Assembly));
+
+builder.Services.AddHostedService<LessonAddedConsumer>();
 
 builder.Services.AddControllers();
 
