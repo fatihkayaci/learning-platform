@@ -2,7 +2,7 @@ using System.Text;
 using BuildingBlocks.Messaging.Abstractions;
 using BuildingBlocks.Messaging.RabbitMQ;
 using Enrollment.API.Middleware;
-using Enrollment.Application.Commands.EnrollInCourse;
+using Enrollment.Application.Extensions;
 using Enrollment.Application.Common.Interfaces;
 using Enrollment.Infrastructure.Messaging;
 using Enrollment.Infrastructure.Persistence;
@@ -71,8 +71,7 @@ builder.Services.AddHttpClient<ICourseService, CourseService>(client =>
     client.BaseAddress = new Uri(builder.Configuration["Services:CatalogUrl"]!);
 });
 
-builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssembly(typeof(EnrollInCourseCommand).Assembly));
+builder.Services.AddApplicationServices();
 
 builder.Services.AddHostedService<LessonAddedConsumer>();
 
