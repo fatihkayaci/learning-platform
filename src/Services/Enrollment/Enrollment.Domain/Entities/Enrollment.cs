@@ -1,3 +1,5 @@
+using Enrollment.Domain.Exceptions;
+
 namespace Enrollment.Domain.Entities;
 
 public class Enrollment : BaseEntity
@@ -10,6 +12,11 @@ public class Enrollment : BaseEntity
 
     public static Enrollment Create(Guid studentId, Guid courseId, int totalLessonCount)
     {
+        if (studentId == Guid.Empty)
+            throw new BusinessException("StudentId cannot be empty.");
+        if (courseId == Guid.Empty)
+            throw new BusinessException("CourseId cannot be empty.");
+
         return new Enrollment
         {
             StudentId = studentId,
