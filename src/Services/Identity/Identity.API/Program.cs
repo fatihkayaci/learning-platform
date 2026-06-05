@@ -1,6 +1,7 @@
 using Identity.Application.Extensions;
 using Identity.Infrastructure.Persistence.Seeders;
 using Identity.API.Middleware;
+using BuildingBlocks.Common.Extensions;
 using BuildingBlocks.Messaging.Abstractions;
 using BuildingBlocks.Messaging.RabbitMQ;
 using Identity.Application.Common.Interfaces;
@@ -8,8 +9,10 @@ using Identity.Infrastructure.Persistence;
 using Identity.Infrastructure.Repositories;
 using Identity.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddSerilogLogging();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -47,6 +50,7 @@ using (IServiceScope scope = app.Services.CreateScope())
     await IdentitySeeder.SeedAsync(db);
 }
 
+app.UseSerilogRequestLogging();
 app.UseMiddleware<ExceptionMiddleware>();
 app.MapControllers();
 

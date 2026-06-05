@@ -1,4 +1,5 @@
 using System.Text;
+using BuildingBlocks.Common.Extensions;
 using BuildingBlocks.Messaging.Abstractions;
 using BuildingBlocks.Messaging.RabbitMQ;
 using Enrollment.API.Middleware;
@@ -13,9 +14,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Microsoft.AspNetCore.Authorization;
+using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddSerilogLogging();
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -93,6 +96,7 @@ using (IServiceScope scope = app.Services.CreateScope())
     await db.Database.MigrateAsync();
 }
 
+app.UseSerilogRequestLogging();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
