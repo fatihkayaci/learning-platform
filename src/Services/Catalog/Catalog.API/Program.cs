@@ -1,6 +1,7 @@
 using System.Text;
 using Catalog.Infrastructure.Persistence.Seeders;
 using Catalog.API.Middleware;
+using BuildingBlocks.Common.Extensions;
 using BuildingBlocks.Messaging.Abstractions;
 using BuildingBlocks.Messaging.RabbitMQ;
 using Catalog.Infrastructure.Messaging;
@@ -13,8 +14,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddSerilogLogging();
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -89,6 +92,7 @@ using (IServiceScope scope = app.Services.CreateScope())
     await CatalogSeeder.SeedAsync(db);
 }
 
+app.UseSerilogRequestLogging();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();

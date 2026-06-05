@@ -71,6 +71,15 @@ services:
       retries: 5
       start_period: 30s
 
+  seq:
+    image: datalust/seq:latest
+    container_name: lp_seq
+    environment:
+      ACCEPT_EULA: Y
+    ports:
+      - "5341:5341"
+      - "5342:80"
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: lp_pgadmin
