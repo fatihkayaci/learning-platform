@@ -13,6 +13,7 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddSerilogLogging();
+builder.AddRedisCache();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

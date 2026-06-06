@@ -1,5 +1,4 @@
 name: learning-platform
-version: '3.8'
 
 services:
   identity-db:
@@ -71,6 +70,14 @@ services:
       retries: 5
       start_period: 30s
 
+  redis:
+    image: redis:7-alpine
+    container_name: lp_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - lp_redis_data:/data
+
   seq:
     image: datalust/seq:latest
     container_name: lp_seq
@@ -94,6 +101,7 @@ services:
       - enrollment-db
 
 volumes:
+  lp_redis_data:
   lp_identity_db_data:
   lp_catalog_db_data:
   lp_enrollment_db_data:

@@ -18,6 +18,7 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddSerilogLogging();
+builder.AddRedisCache();
 
 builder.Services.AddSwaggerGen(options =>
 {
