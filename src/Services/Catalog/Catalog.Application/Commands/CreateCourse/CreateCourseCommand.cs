@@ -1,6 +1,6 @@
+using BuildingBlocks.Common.Idempotency;
 using Catalog.Application.DTOs;
-using MediatR;
 
 namespace Catalog.Application.Commands.CreateCourse;
 
-public record CreateCourseCommand(string Name, string? Description, Guid CategoryId) : IRequest<CourseDto>;
+public record CreateCourseCommand(string Name, string? Description, Guid CategoryId) : IIdempotentCommand<CourseDto>;

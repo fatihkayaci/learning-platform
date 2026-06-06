@@ -15,6 +15,7 @@ public static class ApplicationServiceExtensions
             cfg.RegisterServicesFromAssembly(typeof(GetAllCoursesQuery).Assembly);
             cfg.AddOpenBehavior(typeof(PerformanceBehavior<,>));
             cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            cfg.AddOpenBehavior(typeof(IdempotencyBehavior<,>));
         });
 
         services.AddValidatorsFromAssemblyContaining<GetAllCoursesQuery>();
