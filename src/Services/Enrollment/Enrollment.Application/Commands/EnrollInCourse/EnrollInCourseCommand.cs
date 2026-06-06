@@ -1,5 +1,5 @@
-using MediatR;
+using BuildingBlocks.Common.Idempotency;
 
 namespace Enrollment.Application.Commands.EnrollInCourse;
 
-public record EnrollInCourseCommand(Guid CourseId) : IRequest<Guid>;
+public record EnrollInCourseCommand(Guid CourseId) : IIdempotentCommand<Guid>;
