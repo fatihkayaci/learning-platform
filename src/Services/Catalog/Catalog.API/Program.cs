@@ -69,6 +69,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ILessonRepository, LessonRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddApplicationServices();
 
 builder.Services.AddHostedService<UserRegisteredConsumer>();
@@ -81,6 +82,10 @@ builder.Services.AddSingleton<IEventPublisher>(_ =>
         builder.Configuration["RabbitMQ:Password"]!
     ).GetAwaiter().GetResult()
 );
+builder.Services.AddHttpClient<IEnrollmentService, EnrollmentService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Services:EnrollmentUrl"]!);
+});
 
 builder.Services.AddControllers();
 
