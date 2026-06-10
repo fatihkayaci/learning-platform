@@ -8,6 +8,7 @@ builder.Services.AddDbContext<NotificationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddHostedService<UserRegisteredConsumer>();
+builder.Services.AddHostedService<StudentEnrolledConsumer>();
 
 var host = builder.Build();
 
