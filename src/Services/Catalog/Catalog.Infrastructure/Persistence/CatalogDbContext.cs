@@ -10,6 +10,7 @@ public class CatalogDbContext(DbContextOptions<CatalogDbContext> options) : DbCo
     public DbSet<Course> Courses => Set<Course>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Lesson> Lessons => Set<Lesson>();
+    public DbSet<Review> Reviews => Set<Review>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

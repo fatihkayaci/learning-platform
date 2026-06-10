@@ -1,4 +1,5 @@
 using Enrollment.Application.Commands.CompleteLesson;
+using Enrollment.Application.Queries.CheckEnrollment;
 using Enrollment.Application.Commands.EnrollInCourse;
 using Enrollment.Application.DTOs;
 using Enrollment.Application.Queries.GetEnrolledCourses;
@@ -25,6 +26,13 @@ public class EnrollmentsController : ControllerBase
     {
         List<EnrolledCourseDto> result = await _mediator.Send(new GetEnrolledCoursesQuery(), cancellationToken);
         return Ok(result);
+    }
+    [HttpGet("check")]
+    [AllowAnonymous]
+    public async Task<IActionResult> IsEnrolled([FromQuery] Guid studentId, [FromQuery] Guid courseId, CancellationToken cancellationToken)
+    {
+        bool enrolled = await _mediator.Send(new CheckEnrollmentQuery(studentId, courseId), cancellationToken);
+        return Ok(enrolled);
     }
 
     [HttpPost]
