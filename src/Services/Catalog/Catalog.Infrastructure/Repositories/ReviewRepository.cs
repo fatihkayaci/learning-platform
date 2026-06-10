@@ -11,8 +11,10 @@ public class ReviewRepository : IReviewRepository
     public ReviewRepository(CatalogDbContext context) =>
         _context = context;
 
-    public async Task<IReadOnlyList<Review>> GetAllAsync(CancellationToken cancellationToken) =>
-        await _context.Reviews.ToListAsync(cancellationToken);
+    public async Task<IReadOnlyList<Review>> GetByCourseIdAsync(Guid courseId, CancellationToken cancellationToken) =>
+        await _context.Reviews
+            .Where(r => r.CourseId == courseId)
+            .ToListAsync(cancellationToken);
         
     public async Task<bool> ExistsAsync(Guid studentId, Guid courseId, CancellationToken cancellationToken) =>
         await _context.Reviews
