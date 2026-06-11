@@ -1,5 +1,8 @@
 <Solution>
   <Folder Name="/src/" />
+  <Folder Name="/src/ApiGateways/">
+    <Project Path="src/ApiGateways/Gateway.Yarp/Gateway.Yarp.csproj" />
+  </Folder>
   <Folder Name="/src/BuildingBlocks/">
     <Project Path="src/BuildingBlocks/BuildingBlocks.Messaging/BuildingBlocks.Messaging.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.Common/BuildingBlocks.Common.csproj" />
