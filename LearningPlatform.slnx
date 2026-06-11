@@ -29,4 +29,7 @@
   <Folder Name="/src/Services/Notification/">
     <Project Path="src/Services/Notification/Notification.Worker/Notification.Worker.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Identity.Tests/Identity.Tests.csproj" />
+  </Folder>
 </Solution>
