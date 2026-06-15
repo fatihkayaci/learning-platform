@@ -100,9 +100,9 @@ Used when the caller cannot proceed without the response. Examples:
 - Enrollment → Catalog: "does this course exist?" before creating an enrollment.
 - Catalog → Enrollment (if needed): "is this student enrolled?" before allowing a review.
 
-Resilience: Polly retry policies and circuit breakers are applied to all cross-service HTTP calls.
+Resilience note: cross-service HTTP calls are currently direct. Polly (retry + circuit breaker) is on the [roadmap](#11-roadmap--not-yet-built) but not yet applied.
 
-### Asynchronous (Events via RabbitMQ + MassTransit)
+### Asynchronous (Events via RabbitMQ)
 Used when the action can complete without waiting on the listener. Examples:
 - Identity publishes `UserRegistered` → Notification sends a welcome email.
 - Enrollment publishes `StudentEnrolled` → Notification sends a confirmation email.
@@ -168,10 +168,12 @@ Gateway  → Client    : 201 Created
 |---|---|---|---|---|
 | `UserRegistered` | Identity | Notification | User registers | `userId`, `email`, `role`, `registeredAt` |
 | `CourseCreated` | Catalog | — | Instructor creates a course | `courseId`, `instructorId`, `title`, `createdAt` |
-| `LessonAdded` | Catalog | — | Instructor adds a lesson | `lessonId`, `courseId`, `lessonTitle`, `order` |
-| `StudentEnrolled` | Enrollment | Notification | Student enrolls in a course | `enrollmentId`, `studentId`, `courseId`, `courseTitle` |
+| `LessonAdded` | Catalog | **Enrollment** (increments each enrollment's total lesson count) | Instructor adds a lesson | `lessonId`, `courseId`, `lessonTitle`, `order` |
+| `StudentEnrolled` | Enrollment | Notification, **Catalog** (increments course enrollment count) | Student enrolls in a course | `enrollmentId`, `studentId`, `courseId`, `courseTitle` |
 | `LessonCompleted` | Enrollment | — | Student marks a lesson complete | `enrollmentId`, `studentId`, `lessonId`, `completedAt` |
 | `ReviewSubmitted` | Catalog | — | Student submits a review | `reviewId`, `courseId`, `studentId`, `rating` |
+
+`LessonAdded` and `StudentEnrolled` demonstrate **eventual consistency**: a consumer maintains a local, denormalized count (Enrollment's `TotalLessonCount`, Catalog's `EnrollmentCount`) instead of querying the owning service at read time.
 
 Events without consumers are still published. This follows event-first thinking: future services (Search, Analytics, Achievements) can be added without modifying publishers.
 
@@ -205,20 +207,20 @@ Cross-service data needs are met through HTTP calls (for live consistency) or by
 
 ### Cross-cutting
 - API Gateway: **YARP**
-- Messaging: **RabbitMQ + MassTransit** (dev) → **Azure Service Bus** (prod)
-- Cache: **Redis** (for Catalog course listings)
-- Resilience: **Polly** (retry, circuit breaker)
+- Messaging: **RabbitMQ** via the native `RabbitMQ.Client` (fanout exchanges, manual ack/nack) — see [ADR-002](#adr-002-rabbitmq-via-native-client-not-kafka-not-masstransit)
+- Cache: **Redis** (Catalog course listings + idempotency keys)
+- Idempotency: Redis-backed, applied to write commands via a MediatR pipeline behavior
 - Logging: **Serilog + Seq**
 - Auth: **JWT** with shared signing key across services
 
 ### DevOps
-- Docker + Docker Compose (local development)
-- GitHub Actions (CI: build + test)
-- Azure Container Apps (production deployment)
+- Docker Compose (local infrastructure)
+- GitHub Actions (CI: restore → build → test)
 
 ### Testing
-- xUnit + FluentAssertions
-- Testcontainers (integration tests with real PostgreSQL)
+- xUnit + FluentAssertions + NSubstitute (unit tests)
+
+Polly resilience, OpenTelemetry tracing, the Outbox pattern, Testcontainers integration tests, and Azure Container Apps deployment are tracked in section [11. Roadmap](#11-roadmap--not-yet-built).
 
 ---
 
@@ -227,8 +229,10 @@ Cross-service data needs are met through HTTP calls (for live consistency) or by
 ### ADR-001: Use YARP instead of Ocelot for API Gateway
 Microsoft's actively maintained reverse proxy; better long-term support and more modern configuration model.
 
-### ADR-002: RabbitMQ for messaging (not Kafka)
-Kafka is overkill for a project of this scale. RabbitMQ + MassTransit gives the needed semantics (publish/subscribe, retries) with a much simpler operational footprint. Easy to swap to Azure Service Bus in production via MassTransit configuration.
+### ADR-002: RabbitMQ via native client (not Kafka, not MassTransit)
+Kafka is overkill for a project of this scale; RabbitMQ provides the needed publish/subscribe semantics with a much simpler operational footprint.
+
+I deliberately use the native `RabbitMQ.Client` instead of MassTransit. MassTransit would hide the mechanics behind abstractions — the goal here is to *learn the mechanics*: declaring exchanges and queues, binding routing keys, manual `ack`/`nack`, and consumer lifecycle as `BackgroundService`s. Each consumer owns its connection, channel, fanout exchange, and durable queue explicitly. MassTransit (with its built-in outbox, retry, and scheduling) is a sensible later refactor once these fundamentals are internalized.
 
 ### ADR-003: No saga pattern in MVP
 The only multi-service transaction in scope (enrollment → notification) is non-critical: if notification fails, the enrollment remains valid. A saga would add complexity without addressing a real correctness need at this scope.
@@ -244,14 +248,23 @@ A previous project (Restaurant Bill) covered React + full-stack development. Thi
 
 ---
 
-## 11. Out of scope (intentional)
+## 11. Roadmap — not yet built
 
-These are deliberately excluded from the MVP and would be added in future iterations:
+### Planned (next iterations, rough priority order)
+These strengthen the operational/production-readiness story and are the natural next steps:
 
-- **Payment processing** — all courses are free in MVP. Would be added as a separate Payment Service with Stripe integration.
-- **Video upload and streaming** — lessons carry an external video URL field (YouTube/Vimeo). A dedicated Media Service with object storage + HLS transcoding would be added later.
-- **Saga / outbox patterns** — covered above (ADR-003, ADR-004).
-- **Distributed tracing** — Serilog + Seq is sufficient for MVP. OpenTelemetry + Jaeger would be added when running on Azure with multiple instances.
+- **Health checks** — `/health` endpoints with DB / RabbitMQ / Redis readiness probes.
+- **Resilience** — Polly (or `Microsoft.Extensions.Http.Resilience`) retry + circuit breaker on cross-service HTTP calls.
+- **Distributed tracing** — OpenTelemetry + Jaeger/Tempo across the gateway → service → broker request path. (Serilog + Seq covers logging today, but not end-to-end traces.)
+- **Outbox pattern** — atomic DB-commit + event-publish (see ADR-004).
+- **Integration tests** — Testcontainers with real PostgreSQL + RabbitMQ.
+- **Azure deployment** — Dockerfiles per service + Azure Container Apps (scale-to-zero).
+
+### Intentionally out of scope
+Deliberately excluded to keep the focus on microservices patterns rather than feature breadth:
+
+- **Payment processing** — all courses are free. Would be a separate Payment Service with Stripe integration (and a real use case for the saga pattern).
+- **Video upload and streaming** — lessons carry an external video URL field (YouTube/Vimeo). A dedicated Media Service with object storage + HLS transcoding would come later.
 - **Service mesh** — unnecessary at this scale.
 - **CQRS event sourcing** — too complex for the value provided at this scope.
 
